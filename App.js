@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#1c1444', 
     alignItems: 'flex-end',
-    padding: 10,
+    padding: 60,
   },
   resultText: {
     fontSize: 40,
