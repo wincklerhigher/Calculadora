@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 
 export default function App() {
-  // Array de teclas
   const buttons = ['LIMPAR', 'DEL', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 0, '.', '+/-', '='];
 
   const [currentNumber, setCurrentNumber] = useState('');
   const [lastNumber, setLastNumber] = useState('');
+  const [result, setResult] = useState('');
 
-  // Função para realizar os cálculos
   const calculator = () => {
     const splitNumbers = currentNumber.split(' ');
     const firstNumber = parseFloat(splitNumbers[0]);
@@ -18,60 +17,101 @@ export default function App() {
     switch (operator) {
       case '+':
         setCurrentNumber((firstNumber + secondNumber).toString());
-        break;
+        return;
       case '-':
         setCurrentNumber((firstNumber - secondNumber).toString());
-        break;
+        return;
       case '*':
         setCurrentNumber((firstNumber * secondNumber).toString());
-        break;
+        return;
       case '/':
-        setCurrentNumber((firstNumber / secondNumber).toString());
-        break;
-      default:
-        break;
+        if (secondNumber === 0) {
+          Alert.alert('Erro', 'Divisão por zero não é permitida.');
+        } else {
+          setCurrentNumber((firstNumber / secondNumber).toString());
+        }
+        return;
+    }
+    setLastNumber(currentNumber + ' = ');
+    setResult('');
+  };
+
+  const handlePercentage = () => {
+    const splitNumbers = currentNumber.split(' ');
+    const firstNumber = parseFloat(splitNumbers[0]);
+    const operator = splitNumbers[1];
+    const secondNumber = parseFloat(splitNumbers[2]);
+
+    if (splitNumbers.length === 3) {
+      switch (operator) {
+        case '+':
+          setCurrentNumber((firstNumber + (firstNumber * secondNumber / 100)).toString());
+          return;
+        case '-':
+          setCurrentNumber((firstNumber - (firstNumber * secondNumber / 100)).toString());
+          return;
+        case '*':
+          setCurrentNumber(((firstNumber * secondNumber) / 100).toString());
+          return;
+        case '/':
+          if (secondNumber === 0) {
+            setCurrentNumber('Erro: Divisão por Zero');
+          } else {
+            setCurrentNumber((firstNumber / (firstNumber * secondNumber / 100)).toString());
+          }
+          return;
+      }
+    } else {
+      setCurrentNumber((firstNumber / 100).toString());
     }
   };
 
-  // Função para lidar com a entrada do usuário
   const handleInput = (buttonPressed) => {
-    if (buttonPressed === '+' || buttonPressed === '-' || buttonPressed === '*' || buttonPressed === '/') {
-      setCurrentNumber(currentNumber + ' ' + buttonPressed + ' ');
+    if (buttonPressed === '+' || buttonPressed === '-' || buttonPressed === '*' || buttonPressed === '/' || buttonPressed === '%') {
+      if (buttonPressed === '%') {
+        handlePercentage();
+      } else {
+        setCurrentNumber(currentNumber + ' ' + buttonPressed + ' ');
+      }
+      setResult('');
       return;
     }
 
     switch (buttonPressed) {
       case 'DEL':
         setCurrentNumber(currentNumber.slice(0, -1));
+        setResult('');
         return;
       case 'LIMPAR':
         setLastNumber('');
         setCurrentNumber('');
+        setResult('');
         return;
       case '=':
-        setLastNumber(currentNumber + ' = ');
         calculator();
-        return;
-      case '%':        
         return;
       case '+/-':
         setCurrentNumber((parseFloat(currentNumber) * -1).toString());
+        setResult('');
         return;
       default:
-        setCurrentNumber(currentNumber + buttonPressed.toString());
+        if (result !== '') {
+          setCurrentNumber(buttonPressed.toString());
+          setResult('');
+        } else {
+          setCurrentNumber(currentNumber + buttonPressed.toString());
+        }
         return;
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Área onde o resultado é exibido */}
       <View style={styles.results}>
         <Text style={styles.historyText}>{lastNumber}</Text>
         <Text style={styles.resultText}>{currentNumber}</Text>
       </View>
 
-      {/* Área onde os botões são exibidos */}
       <View style={styles.buttons}>
         {buttons.map((button, index) => (
           <TouchableOpacity
@@ -83,7 +123,7 @@ export default function App() {
             ]}
             onPress={() => handleInput(button)}
           >
-            <Text style={typeof button === 'number' ? styles.textWhite : styles.textGrey}>
+            <Text style={[typeof button === 'number' ? styles.textWhite : styles.textGrey, button === '=' ? styles.textEqual : null]}>
               {button}
             </Text>
           </TouchableOpacity>
@@ -96,19 +136,19 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#3c0473',        
+    backgroundColor: '#3c0473',
   },
   results: {
     flex: 2,
     justifyContent: 'center',
-    backgroundColor: '#1c1444', 
+    backgroundColor: '#1c1444',
     alignItems: 'flex-end',
     padding: 55,
   },
   resultText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff', 
+    color: '#fff',
   },
   historyText: {
     fontSize: 20,
@@ -125,15 +165,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 5,
   },
-  button: {    
+  button: {
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 95, 
+    minWidth: 95,
     minHeight: 95,
-    flex: 2,   
-  },
-  whiteButton: {
-    backgroundColor: '#3c0473',
+    flex: 2,
   },
   greyButton: {
     backgroundColor: '#3c0473',
@@ -147,9 +184,9 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
   equalButton: {
-    backgroundColor: '#1c1444',    
+    backgroundColor: '#1c1444',
   },
   textEqual: {
-    color: '#fff',
+    color: 'white',
   },
 });
