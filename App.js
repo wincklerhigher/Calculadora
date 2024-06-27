@@ -96,14 +96,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#3c0473',
+    backgroundColor: '#3c0473',        
   },
   results: {
     flex: 2,
     justifyContent: 'center',
     backgroundColor: '#1c1444', 
     alignItems: 'flex-end',
-    padding: 60,
+    padding: 55,
   },
   resultText: {
     fontSize: 40,
@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
+    padding: 5,
   },
-  button: {
-    width: '23%', 
-    aspectRatio: 1,
+  button: {    
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',    
-    margin: '1%',
+    minWidth: 95, 
+    minHeight: 95,
+    flex: 2,   
   },
   whiteButton: {
     backgroundColor: '#3c0473',
